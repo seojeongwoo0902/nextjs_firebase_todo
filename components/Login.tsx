@@ -1,5 +1,6 @@
 import { NextPage } from "next";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -7,12 +8,24 @@ const Login: NextPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoggingIn, setIsLoggingIn]=useState<boolean>(true)
 
+  const {login,signup,currentUser} = useAuth()
 
-  function submitHandler(){
+  // console.log("현재 사용자 : ",currentUser)
+
+  async function submitHandler(){
     if (!email||!password){
         setError(`Please enter email and password`)
         return 
     }
+    if(isLoggingIn){
+      try {
+         await login(email,password)
+      } catch (error) {
+        setError('Incorrect email or password')
+      }
+     return   
+    }
+    await signup(email, password)
   }
 
   return (
